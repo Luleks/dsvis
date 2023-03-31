@@ -104,7 +104,8 @@ class DLinkedList:
             n = (n + 1) % 4
             k = (k + 1)
 
-    def __f(self, n):
+    @staticmethod
+    def __f(n):
         if n in {2, 4, 6}:
             return -1
         return 0
@@ -225,3 +226,43 @@ class DLinkedList:
         self.tail_node = new_node
         draw(win, settings_buttons, button_and_pair, llist, "Tail found, inserting at tail")
         pygame.time.delay(1000)
+
+    def add_after_index(self, info, draw, win, settings_buttons, button_and_pair, llist):
+        index, value = tuple(info.split(","))
+        index = int(index)
+        if index >= self.count:
+            draw(win, settings_buttons, button_and_pair, llist, "Index out of range")
+            pygame.time.delay(2000)
+            return
+        elif index == self.count - 1:
+            self.add_to_tail_noptr(value, draw, win, settings_buttons, button_and_pair, llist)
+            return
+
+        self.count += 1
+        temp = self.head
+        ind = 0
+        while ind != index:
+            draw(win, settings_buttons, button_and_pair, llist, f"Searching for index {index}, current:{ind}")
+            temp.draw(win, 0, 0, 0, 0, True)
+            pygame.display.update()
+            pygame.time.delay(1000)
+
+            temp = temp.dlink
+            ind += 1
+
+        draw(win, settings_buttons, button_and_pair, llist, f"Index {index} found, inserting node")
+        temp.draw(win, 0, 0, 0, 0, True)
+        pygame.display.update()
+        pygame.time.delay(1000)
+
+        new_node = DLNode(value, temp, temp.dlink, temp.dlink.x, temp.dlink.y, temp.dlink.reverse)
+        temp.dlink = new_node
+
+        temp = new_node.dlink
+        while temp.dlink is not None:
+            temp.x = temp.dlink.x
+            temp.y = temp.dlink.y
+            temp.reverse = temp.dlink.reverse
+            temp = temp.dlink
+        x, y, reverse = self.__calculate_tail_info()
+        temp.x, temp.y, temp.reverse = x, y, reverse
