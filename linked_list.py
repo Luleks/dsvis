@@ -1,3 +1,4 @@
+import os
 import pygame
 from button import Button
 from input_form import InputForm
@@ -46,9 +47,9 @@ def linked_list(win):
 
     sll_button = Button(30, 100, 120, 60, GREY, "SLL", BLACK, True)
     dll_button = Button(150, 100, 120, 60, GREY, "DLL", BLACK)
-    ptr_to_head = Button(30, 160, 120, 60, GREY, "head-ptr", BLACK, True)
+    help_button = Button(30, 160, 120, 60, GREY, "help", BLACK)
     ptr_to_tail = Button(150, 160, 120, 60, GREY, "tail-ptr", BLACK)
-    settings_buttons = [sll_button, dll_button, ptr_to_head, ptr_to_tail]
+    settings_buttons = [sll_button, dll_button, help_button, ptr_to_tail]
 
     add_to_head = Button(30, 250, 240, 60, GREY, "add to head", BLACK)
     add_to_tail = Button(30, 400, 240, 60, GREY, "add to tail", BLACK)
@@ -70,7 +71,6 @@ def linked_list(win):
                        delete_from_head: delete_from_head_ret, delete_from_tail: delete_from_tail_ret,
                        delete_value: delete_value_ev, delete_from_index: delete_from_index_ev}
 
-    ll_type = "sll"
     sll = SLinkedList(False)
     dll = DLinkedList(False)
 
@@ -109,6 +109,10 @@ def linked_list(win):
                             dll.tail = sll.tail
                         elif button.text == "tail-ptr":
                             llist.tail = not llist.tail
+                        elif button.text == "help":
+                            path = os.path.abspath('linked_list_folder/linked_list_help.pdf')
+                            os.startfile(path)
+                            button.active = False
 
                 for button, pair in button_and_pair.items():
                     if button.is_over(pos):
