@@ -181,18 +181,11 @@ class DLinkedList(LinkedList):
         super()._shift_right(new_node)
 
     def delete_from_head(self, draw, win, settings_buttons, button_and_pair, llist):
-        if self.head is None:
-            draw(win, settings_buttons, button_and_pair, llist, f"Error: Trying to delete from empty list")
-            pygame.time.delay(2000)
+        if super().delete_from_head(draw, win, settings_buttons, button_and_pair, llist) == -1:
             return
-        temp = self.head
-        draw(win, settings_buttons, button_and_pair, llist, f"Head selected, commencing deletion")
-        temp.draw(win, 0, 0, 0, 0, True)
-        pygame.display.update()
-        pygame.time.delay(1000)
 
         self.count -= 1
-        info_to_return = temp.info
+        info_to_return = self.head.info
         temp1 = self.tail_node
         while temp1.llink is not None:
             temp1.x = temp1.llink.x
@@ -200,9 +193,9 @@ class DLinkedList(LinkedList):
             temp1.reverse = temp1.llink.reverse
             temp1 = temp1.llink
 
-        if temp.dlink is not None:
-            temp.dlink.llink = None
-        self.head = temp.dlink
+        if self.head.dlink is not None:
+            self.head.dlink.llink = None
+        self.head = self.head.dlink
         return info_to_return
 
     def delete_from_tail_exist(self, draw, win, settings_buttons, button_and_pair, llist):
@@ -226,69 +219,25 @@ class DLinkedList(LinkedList):
         return temp_to_return
 
     def delete_from_tail_noptr(self, draw, win, settings_buttons, button_and_pair, llist):
-        if self.head is None:
-            draw(win, settings_buttons, button_and_pair, llist, f"Error: Trying to delete from empty list")
-            pygame.time.delay(2000)
+        if super().delete_from_tail_noptr(draw, win, settings_buttons, button_and_pair, llist) == -1:
             return
-        elif self.count == 1:
-            return self.delete_from_head(draw, win, settings_buttons, button_and_pair, llist)
 
-        temp = self.head
-        while temp.dlink is not None:
-            draw(win, settings_buttons, button_and_pair, llist, "Searching for tail")
-            temp.draw(win, 0, 0, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
-
-            temp = temp.dlink
-
-        draw(win, settings_buttons, button_and_pair, llist, "Tail found, commencing deletion")
-        temp.draw(win, 0, 0, 0, 0, True)
-        pygame.display.update()
-        pygame.time.delay(1000)
-        temp_to_return = temp.info
-
+        temp_to_return = self.tail_node.info
         self.tail_node.llink.dlink = None
         self.tail_node = self.tail_node.llink
         self.count -= 1
 
         return temp_to_return
 
-    def delete_from_tail(self, draw, win, settings_buttons, button_and_pair, llist):
-        if self.tail:
-            return self.delete_from_tail_exist(draw, win, settings_buttons, button_and_pair, llist)
-        return self.delete_from_tail_noptr(draw, win, settings_buttons, button_and_pair, llist)
-
     def delete_value(self, info, draw, win, settings_buttons, button_and_pair, llist):
-        if self.head is None:
-            draw(win, settings_buttons, button_and_pair, llist, f"Error: Trying to delete from empty list")
-            pygame.time.delay(2000)
+        temp = super().delete_value(info, draw, win, settings_buttons, button_and_pair, llist)
+        if temp == -1:
             return
-
-        temp = self.head
-        while temp is not None and temp.info != info:
-            draw(win, settings_buttons, button_and_pair, llist, "Searching for value")
-            temp.draw(win, 0, 0, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
-
-            temp = temp.dlink
-
-        if temp is None:
-            draw(win, settings_buttons, button_and_pair, llist, f"List index out of range")
-            pygame.display.update()
-            pygame.time.delay(1000)
-        elif temp == self.head:
+        elif temp == 1:
             self.delete_from_head(draw, win, settings_buttons, button_and_pair, llist)
-        elif temp == self.tail_node:
+        elif temp == 2:
             self.delete_from_tail_exist(draw, win, settings_buttons, button_and_pair, llist)
         else:
-            self.count -= 1
-            draw(win, settings_buttons, button_and_pair, llist, "Node found, commencing deletion")
-            temp.draw(win, 0, 0, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
-
             temp1 = self.tail_node
             while temp1 != temp:
                 temp1.x = temp1.llink.x
@@ -297,47 +246,24 @@ class DLinkedList(LinkedList):
                 temp1 = temp1.llink
 
             temp.llink.dlink = temp.dlink
+            temp.dlink.llink = temp.llink
 
     def delete_from_index(self, info, draw, win, settings_buttons, button_and_pair, llist):
-        info = int(info)
-        if self.count <= 0:
-            draw(win, settings_buttons, button_and_pair, llist, "Error: Trying to delete from empty list")
-            pygame.time.delay(2000)
+        temp = super().delete_from_index(info, draw, win, settings_buttons, button_and_pair, llist)
+        if temp == -1:
             return
-        elif info >= self.count:
-            draw(win, settings_buttons, button_and_pair, llist, "List index out of range")
-            pygame.time.delay(2000)
-            return
-
-        temp = self.head
-        ind = 0
-        while ind != info:
-            draw(win, settings_buttons, button_and_pair, llist, f"Searching for index {info}, current:{ind}")
-            temp.draw(win, 0, 0, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
-
-            temp = temp.dlink
-            ind += 1
-
-        draw(win, settings_buttons, button_and_pair, llist, f"Index {info} found, commencing deletion")
-        temp.draw(win, 0, 0, 0, 0, True)
-        pygame.display.update()
-        pygame.time.delay(1000)
-
-        if temp == self.head:
+        elif temp == 1:
             self.delete_from_head(draw, win, settings_buttons, button_and_pair, llist)
-            return
-        elif temp == self.tail_node:
+        elif temp == 2:
             self.delete_from_tail_exist(draw, win, settings_buttons, button_and_pair, llist)
-            return
+        else:
+            temp1 = self.tail_node
+            while temp1 != temp:
+                temp1.x = temp1.llink.x
+                temp1.y = temp1.llink.y
+                temp1.reverse = temp1.llink.reverse
+                temp1 = temp1.llink
 
-        temp1 = self.tail_node
-        while temp1 != temp:
-            temp1.x = temp1.llink.x
-            temp1.y = temp1.llink.y
-            temp1.reverse = temp1.llink.reverse
-            temp1 = temp1.llink
-
-        temp.llink.dlink = temp.dlink
-        self.count -= 1
+            temp.llink.dlink = temp.dlink
+            temp.dlink.llink = temp.llink
+            self.count -= 1
