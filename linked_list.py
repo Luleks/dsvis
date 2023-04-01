@@ -98,17 +98,19 @@ def linked_list(win):
 
                 for button in settings_buttons:
                     if button.is_over(pos):
-                        button.active = not button.active
-                        if button.text == "SLL":
-                            settings_buttons[1].active = not settings_buttons[2].active
+                        if button.text == "SLL" and not button.active:
+                            settings_buttons[1].active = False
+                            button.active = True
                             llist = sll
                             sll.tail = dll.tail
-                        elif button.text == "DLL":
-                            settings_buttons[0].active = not settings_buttons[0].active
+                        elif button.text == "DLL" and not button.active:
+                            settings_buttons[0].active = False
+                            button.active = True
                             llist = dll
                             dll.tail = sll.tail
                         elif button.text == "tail-ptr":
                             llist.tail = not llist.tail
+                            button.active = not button.active
                         elif button.text == "help":
                             path = os.path.abspath('linked_list_folder/linked_list_help.pdf')
                             os.startfile(path)
@@ -150,7 +152,7 @@ def linked_list(win):
                                 text_box_message = ""
 
                         elif button.text == "add after index":
-                            if pair.text == "":
+                            if pair.text == "" or len(pair.text) < 3:
                                 pair.error_rect = True
                                 text_box_message = "Input index and value both between 0 and 9 in format index,value"
                             elif not pair.text[0].isdigit() or not pair.text[1] == ',' or not pair.text[2].isdigit():

@@ -1,26 +1,15 @@
 import pygame
+from LinkedList import Node, LinkedList
 import math
 
 BLUR = pygame.image.load("linked_list_folder/wannabe_blur.jpg")
 
 
-class SLNode:
-    font = pygame.font.SysFont("comicsans", 25)
-    parts = 2
-    width = 180
-    height = 60
-    color = (128, 128, 128)
-    text_color = (0, 0, 0)
-    hgap = 120
-    vgap = 60
-    link_text = font.render("Link", True, text_color)
+class SLNode(Node):
+    dlink_text = Node.font.render("Link", True, Node.text_color)
 
     def __init__(self, info, link, x, y, reverse):
-        self.info = info
-        self.link = link
-        self.x = x
-        self.y = y
-        self.reverse = reverse
+        super().__init__(info, link, x, y, reverse)
 
     def draw(self, win, dir_x, dir_y, additional_rect=False):
         pygame.draw.rect(win, SLNode.color, (self.x, self.y, self.width, self.height))
@@ -36,16 +25,16 @@ class SLNode:
         if not self.reverse:
             win.blit(info_text, (self.x + (self.width // 2 - info_text.get_width()) // 2,
                                  self.y + (self.height - info_text.get_height()) // 2))
-            win.blit(SLNode.link_text, (self.x + self.width // 2 + (self.width // 2 - SLNode.link_text.get_width()) // 2,
-                                        self.y + (self.height - SLNode.link_text.get_height()) // 2))
+            win.blit(SLNode.dlink_text, (self.x + self.width // 2 + (self.width // 2 - SLNode.dlink_text.get_width()) // 2,
+                                         self.y + (self.height - SLNode.dlink_text.get_height()) // 2))
         else:
             win.blit(info_text, (self.x + self.width // 2 + (self.width // 2 - info_text.get_width()) // 2,
                                  self.y + (self.height - info_text.get_height()) // 2))
-            win.blit(SLNode.link_text, (self.x + (self.width // 2 - SLNode.link_text.get_width()) // 2,
-                                        self.y + (self.height - SLNode.link_text.get_height()) // 2))
+            win.blit(SLNode.dlink_text, (self.x + (self.width // 2 - SLNode.dlink_text.get_width()) // 2,
+                                         self.y + (self.height - SLNode.dlink_text.get_height()) // 2))
 
     def draw_links(self, win, dir_x, dir_y):
-        if self.link is None:
+        if self.dlink is None:
             return
         if not dir_x and not dir_y:
             return
@@ -63,13 +52,10 @@ class SLNode:
                              (self.x + self.width * 1 // 4, self.y + self.height + SLNode.vgap), 2)
 
 
-class SLinkedList:
+class SLinkedList(LinkedList):
 
     def __init__(self, tail):
-        self.head = None
-        self.tail = tail
-        self.tail_node = None
-        self.count = 0
+        super().__init__(tail)
 
     def add_to_head(self, info, draw, win, settings_buttons, button_and_pair, llist):
         self.count += 1
@@ -89,49 +75,13 @@ class SLinkedList:
         pygame.display.update()
         pygame.time.delay(1000)
 
-        temp_node.link = self.head
+        temp_node.dlink = self.head
         temp_node.draw(win, 1, 0)
         pygame.display.update()
         pygame.time.delay(1000)
 
         self.head = temp_node
-        temp = self.head
-        y, i = 220, 0
-        while temp is not None:
-            temp.y = y
-            if i % 2 == 1:
-                y += (SLNode.height + SLNode.vgap)
-            if (i + 1) % 4 == 0 or (i + 2) % 4 == 0:
-                temp.reverse = True
-            else:
-                temp.reverse = False
-            if (i - 1) % 4 == 0 or (i + 2) % 4 == 0:
-                temp.x = 660
-            else:
-                temp.x = 360
-            i += 1
-            temp = temp.link
-
-    def add_to_tail(self, info, draw, win, settings_buttons, button_and_pair, llist):
-        if self.tail:
-            self.add_to_tail_exist(info, draw, win, settings_buttons, button_and_pair, llist)
-            return
-        self.add_to_tail_noptr(info, draw, win, settings_buttons, button_and_pair, llist)
-
-    def __calculate_tail_info(self):
-        if (self.count + 1) % 4 == 0 or (self.count + 2) % 4 == 0:
-            node_x = 660
-        else:
-            node_x = 360
-        if self.count % 2 == 1:
-            node_y = self.tail_node.y + SLNode.vgap + SLNode.height
-        else:
-            node_y = self.tail_node.y
-        if (self.count + 1) % 4 == 0 or self.count % 4 == 0:
-            reverse = True
-        else:
-            reverse = False
-        return node_x, node_y, reverse
+        super()._calculate_after_head()
 
     def add_to_tail_exist(self, info, draw, win, settings_buttons, button_and_pair, llist):
         self.count += 1
@@ -142,14 +92,14 @@ class SLinkedList:
 
         draw(win, settings_buttons, button_and_pair, llist, "Inserting node at tail")
 
-        node_x, node_y, reverse = self.__calculate_tail_info()
+        node_x, node_y, reverse = self._calculate_tail_info()
 
         new_node = SLNode(info, None, node_x, node_y, reverse)
         new_node.draw(win, 0, 0)
         pygame.display.update()
         pygame.time.delay(1000)
 
-        self.tail_node.link = new_node
+        self.tail_node.dlink = new_node
         self.tail_node = new_node
 
     def add_to_tail_noptr(self, info, draw, win, settings_buttons, button_and_pair, llist):
@@ -159,76 +109,39 @@ class SLinkedList:
             self.tail_node = self.head
             return
 
-        temp = self.head
-        while temp.link is not None:
-            draw(win, settings_buttons, button_and_pair, llist, "Searching for tail")
-            temp.draw(win, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
-
-            temp = temp.link
+        super()._traverse_to_tail(draw, win, settings_buttons, button_and_pair, llist)
 
         draw(win, settings_buttons, button_and_pair, llist, "Tail found, inserting at tail")
-        temp.draw(win, 0, 0, True)
+        self.tail_node.draw(win, 0, 0, True)
         pygame.display.update()
         pygame.time.delay(1000)
 
-        node_x, node_y, reverse = self.__calculate_tail_info()
+        node_x, node_y, reverse = self._calculate_tail_info()
         new_node = SLNode(info, None, node_x, node_y, reverse)
         new_node.draw(win, 0, 0, False)
         pygame.display.update()
         pygame.time.delay(1000)
 
-        self.tail_node.link = new_node
+        self.tail_node.dlink = new_node
         self.tail_node = new_node
         draw(win, settings_buttons, button_and_pair, llist, "Tail found, inserting at tail")
         pygame.time.delay(1000)
 
     def add_after_index(self, info, draw, win, settings_buttons, button_and_pair, llist):
-        index, value = tuple(info.split(","))
-        index = int(index)
-        if index >= self.count:
-            draw(win, settings_buttons, button_and_pair, llist, "Index out of range")
-            pygame.time.delay(2000)
-            return
-        elif index == self.count - 1:
-            self.add_to_tail_noptr(value, draw, win, settings_buttons, button_and_pair, llist)
+        temp, value = super().add_after_index(info, draw, win, settings_buttons, button_and_pair, llist)
+        if temp is None and value is None:
             return
 
-        self.count += 1
-        temp = self.head
-        ind = 0
-        while ind != index:
-            draw(win, settings_buttons, button_and_pair, llist, f"Searching for index {index}, current:{ind}")
-            temp.draw(win, 0, 0, True)
-            pygame.display.update()
-            pygame.time.delay(1000)
+        new_node = SLNode(value, temp.dlink, temp.dlink.x, temp.dlink.y, temp.dlink.reverse)
+        temp.dlink = new_node
 
-            temp = temp.link
-            ind += 1
-
-        draw(win, settings_buttons, button_and_pair, llist, f"Index {index} found, inserting node")
-        temp.draw(win, 0, 0, True)
-        pygame.display.update()
-        pygame.time.delay(1000)
-
-        new_node = SLNode(value, temp.link, temp.link.x, temp.link.y, temp.link.reverse)
-        temp.link = new_node
-
-        temp = new_node.link
-        while temp.link is not None:
-            temp.x = temp.link.x
-            temp.y = temp.link.y
-            temp.reverse = temp.link.reverse
-            temp = temp.link
-        x, y, reverse = self.__calculate_tail_info()
-        temp.x, temp.y, temp.reverse = x, y, reverse
+        super()._shift_right(new_node)
 
     def __reverse(self):
         prev, temp, next_n = None, self.head, None
         while temp is not None:
-            next_n = temp.link
-            temp.link = prev
+            next_n = temp.dlink
+            temp.dlink = prev
             prev = temp
             temp = next_n
         self.head = prev
@@ -247,14 +160,14 @@ class SLinkedList:
         info_to_return = temp.info
         self.__reverse()
         temp1 = self.head
-        while temp1.link is not None:
-            temp1.x = temp1.link.x
-            temp1.y = temp1.link.y
-            temp1.reverse = temp1.link.reverse
-            temp1 = temp1.link
+        while temp1.dlink is not None:
+            temp1.x = temp1.dlink.x
+            temp1.y = temp1.dlink.y
+            temp1.reverse = temp1.dlink.reverse
+            temp1 = temp1.dlink
         self.__reverse()
 
-        self.head = temp.link
+        self.head = temp.dlink
         self.count -= 1
         return info_to_return
 
@@ -274,9 +187,9 @@ class SLinkedList:
         pygame.time.delay(1000)
 
         temp = self.head
-        while temp.link != self.tail_node:
-            temp = temp.link
-        temp.link = None
+        while temp.dlink != self.tail_node:
+            temp = temp.dlink
+        temp.dlink = None
         self.tail_node = temp
         self.count -= 1
         return temp_to_return
@@ -290,13 +203,13 @@ class SLinkedList:
             return self.delete_from_head(draw, win, settings_buttons, button_and_pair, llist)
 
         temp = self.head
-        while temp.link is not None:
+        while temp.dlink is not None:
             draw(win, settings_buttons, button_and_pair, llist, "Searching for tail")
             temp.draw(win, 0, 0, True)
             pygame.display.update()
             pygame.time.delay(1000)
 
-            temp = temp.link
+            temp = temp.dlink
 
         draw(win, settings_buttons, button_and_pair, llist, "Tail found, commencing deletion")
         temp.draw(win, 0, 0, True)
@@ -305,9 +218,9 @@ class SLinkedList:
         temp_to_return = temp.info
 
         temp = self.head
-        while temp.link != self.tail_node:
-            temp = temp.link
-        temp.link = None
+        while temp.dlink != self.tail_node:
+            temp = temp.dlink
+        temp.dlink = None
         self.tail_node = temp
         self.count -= 1
 
@@ -333,7 +246,7 @@ class SLinkedList:
             pygame.time.delay(1000)
 
             prev = temp
-            temp = temp.link
+            temp = temp.dlink
 
         if temp is None:
             draw(win, settings_buttons, button_and_pair, llist, f"List index out of range")
@@ -353,13 +266,13 @@ class SLinkedList:
             self.__reverse()
             temp1 = self.head
             while temp1 != temp:
-                temp1.x = temp1.link.x
-                temp1.y = temp1.link.y
-                temp1.reverse = temp1.link.reverse
-                temp1 = temp1.link
+                temp1.x = temp1.dlink.x
+                temp1.y = temp1.dlink.y
+                temp1.reverse = temp1.dlink.reverse
+                temp1 = temp1.dlink
             self.__reverse()
 
-            prev.link = temp.link
+            prev.dlink = temp.dlink
 
     def delete_from_index(self, info, draw, win, settings_buttons, button_and_pair, llist):
         info = int(info)
@@ -382,7 +295,7 @@ class SLinkedList:
             pygame.time.delay(1000)
 
             prev = temp
-            temp = temp.link
+            temp = temp.dlink
             ind += 1
 
         draw(win, settings_buttons, button_and_pair, llist, f"Index {info} found, commencing deletion")
@@ -400,13 +313,13 @@ class SLinkedList:
         self.__reverse()
         temp1 = self.head
         while temp1 != temp:
-            temp1.x = temp1.link.x
-            temp1.y = temp1.link.y
-            temp1.reverse = temp1.link.reverse
-            temp1 = temp1.link
+            temp1.x = temp1.dlink.x
+            temp1.y = temp1.dlink.y
+            temp1.reverse = temp1.dlink.reverse
+            temp1 = temp1.dlink
         self.__reverse()
 
-        prev.link = temp.link
+        prev.dlink = temp.dlink
         self.count -= 1
 
     def draw(self, win):
@@ -414,5 +327,5 @@ class SLinkedList:
         n = 0
         while temp is not None:
             temp.draw(win, int(math.sin((n + 1) * math.pi / 2)), n % 2)
-            temp = temp.link
+            temp = temp.dlink
             n = (n + 1) % 4
