@@ -2,6 +2,7 @@ import pygame
 import os
 from button import Button
 from input_form import InputForm
+from Stack_ import Stack
 
 WHITE = (255, 255, 255)
 GREY = (128, 128, 128)
@@ -17,7 +18,7 @@ def clear_effects(key_val):
             value.error_rect = False
 
 
-def draw(win, settings_buttons, button_and_pair, text_box_message):
+def draw(win, settings_buttons, button_and_pair, text_box_message, stack_structure):
     win.blit(BACKGROUND_IMAGE, (0, 0))
 
     title = TITLE_FONT.render("STACK", True, WHITE)
@@ -34,6 +35,8 @@ def draw(win, settings_buttons, button_and_pair, text_box_message):
     for button, pair in button_and_pair.items():
         button.draw(win)
         pair.draw(win)
+
+    stack_structure.draw(win)
 
     pygame.display.update()
 
@@ -59,6 +62,8 @@ def stack(win):
     button_and_pair = {push: push_value_ev, pop: pop_ret, pop_value: pop_value_ev, top: top_ret}
 
     text_box_message = ""
+
+    stack_structure = Stack(430, 220, 400, 420)
 
     run = True
     while run:
@@ -105,4 +110,4 @@ def stack(win):
             if isinstance(pair, InputForm):
                 pair.shift_color(pos)
 
-        draw(win, settings_buttons, button_and_pair, text_box_message)
+        draw(win, settings_buttons, button_and_pair, text_box_message, stack_structure)
