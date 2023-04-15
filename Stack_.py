@@ -12,8 +12,8 @@ class Stack:
         self.dynamic = False
         self.line_color = (0, 0, 0)
         self.free_space = 50
-        self.elements = ['0', '1', '2']
-        self.top = 2
+        self.elements = []
+        self.top = -1
         self.font = pygame.font.SysFont("comicsans", 20)
 
     def draw(self, win):
@@ -56,3 +56,38 @@ class Stack:
         pygame.draw.line(win, self.line_color, (top_x + top_width, top_y), (top_x + top_width - 10, top_y + 10), 3)
         top_text = self.font.render("top", True, self.line_color)
         win.blit(top_text, (top_x + (top_width - 10 - top_text.get_width()) // 2, top_y - top_text.get_height()))
+
+    def switch_to_dynamic(self):
+        self.dynamic = True
+
+    def switch_to_static(self):
+        if len(self.elements) > self.capacity:
+            self.elements = self.elements[0:self.capacity]
+        self.dynamic = False
+
+    def push(self, info, draw, win, settings_buttons, button_and_pair, stack_structure):
+        if not self.dynamic and len(self.elements) == self.capacity:
+            draw(win, settings_buttons, button_and_pair, stack_structure, "Reached limit for static implementation of stack")
+            pygame.time.delay(1000)
+            return
+        draw(win, settings_buttons, button_and_pair, stack_structure, f"Pushing {info} to stack")
+        pygame.time.delay(1000)
+        self.elements.append(info)
+        draw(win, settings_buttons, button_and_pair, stack_structure, f"Pushing {info} to stack")
+        pygame.time.delay(1000)
+        if self.top < self.capacity - 1:
+            self.top += 1
+
+    def pop(self, draw, win, settings_buttons, button_and_pair, stack_structure):
+        if len(self.elements) == 0:
+            draw(win, settings_buttons, button_and_pair, stack_structure, "Error popping from empty stack")
+            pygame.time.delay(1000)
+            return
+        draw(win, settings_buttons, button_and_pair, stack_structure, "Popping from stack")
+        pygame.time.delay(1000)
+        to_return = self.elements.pop()
+        draw(win, settings_buttons, button_and_pair, stack_structure, "Popping from stack")
+        pygame.time.delay(1000)
+        if len(self.elements) < self.capacity:
+            self.top -= 1
+        return to_return

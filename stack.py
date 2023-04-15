@@ -18,7 +18,7 @@ def clear_effects(key_val):
             value.error_rect = False
 
 
-def draw(win, settings_buttons, button_and_pair, text_box_message, stack_structure):
+def draw(win, settings_buttons, button_and_pair, stack_structure, text_box_message):
     win.blit(BACKGROUND_IMAGE, (0, 0))
 
     title = TITLE_FONT.render("STACK", True, WHITE)
@@ -54,10 +54,10 @@ def stack(win):
     pop_value = Button(930, 400, 240, 60, GREY, "POP value", BLACK)
     top = Button(930, 550, 240, 60, GREY, "TOP", BLACK)
 
-    push_value_ev = InputForm(930, 460, 240, 60, GREY, BLACK, 3, False, "Enter int value")
-    pop_ret = Button(930, 610, 240, 60, GREY, "returned value", BLACK)
-    pop_value_ev = InputForm(930, 160, 240, 60, GREY, BLACK, 3, False, "Enter int value")
-    top_ret = Button(930, 310, 240, 60, GREY, "returned value", BLACK)
+    push_value_ev = InputForm(930, 160, 240, 60, GREY, BLACK, 3, False, "Enter int value")
+    pop_ret = Button(930, 310, 240, 60, GREY, "returned value", BLACK)
+    pop_value_ev = InputForm(930, 460, 240, 60, GREY, BLACK, 3, False, "Enter int value")
+    top_ret = Button(930, 610, 240, 60, GREY, "returned value", BLACK)
 
     button_and_pair = {push: push_value_ev, pop: pop_ret, pop_value: pop_value_ev, top: top_ret}
 
@@ -92,9 +92,38 @@ def stack(win):
                             os.startfile(path)
                             button.active = False
 
+                        elif button.text == "Static" and not button.active:
+                            settings_buttons[1].active = False
+                            button.active = True
+                            stack_structure.switch_to_static()
+
+                        elif button.text == "Dynamic" and not button.active:
+                            settings_buttons[0].active = False
+                            button.active = True
+                            stack_structure.switch_to_dynamic()
+
                 for button, pair in button_and_pair.items():
                     if button.is_over(pos):
-                        print(button.text)
+
+                        if button.text == "PUSH":
+                            if pair.text == "":
+                                pair.error_rect = True
+                                text_box_message = "Input integer value between 0 and 999"
+                            elif not pair.text.isdigit():
+                                pair.error_rect = True
+                                text_box_message = "Letters and characters other than digits not allowed"
+                            else:
+                                stack_structure.push(pair.text, draw, win, settings_buttons, button_and_pair, stack_structure)
+                                pair.text = ""
+                                clear_effects(button_and_pair)
+                                text_box_message = ""
+
+                        elif button.text == "POP":
+                            ret_value = stack_structure.pop(draw, win, settings_buttons, button_and_pair, stack_structure)
+                            if ret_value is not None:
+                                pair.text = "returned value"
+                                pair.text = pair.text + f": {ret_value}"
+
                     if isinstance(pair, InputForm):
                         pair.state_change(pos)
 
@@ -110,4 +139,4 @@ def stack(win):
             if isinstance(pair, InputForm):
                 pair.shift_color(pos)
 
-        draw(win, settings_buttons, button_and_pair, text_box_message, stack_structure)
+        draw(win, settings_buttons, button_and_pair, stack_structure, text_box_message)
