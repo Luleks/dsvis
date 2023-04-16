@@ -124,6 +124,25 @@ def stack(win):
                                 pair.text = "returned value"
                                 pair.text = pair.text + f": {ret_value}"
 
+                        elif button.text == "TOP":
+                            ret_value = stack_structure.top_(draw, win, settings_buttons, button_and_pair, stack_structure)
+                            if ret_value is not None:
+                                pair.text = "returned value"
+                                pair.text = pair.text + f": {ret_value}"
+
+                        elif button.text == "POP value":
+                            if pair.text == "":
+                                pair.error_rect = True
+                                text_box_message = "Input integer value between 0 and 999"
+                            elif not pair.text.isdigit():
+                                pair.error_rect = True
+                                text_box_message = "Letters and characters other than digits not allowed"
+                            else:
+                                stack_structure.pop_value(pair.text, draw, win, settings_buttons, button_and_pair, stack_structure)
+                                pair.text = ""
+                                clear_effects(button_and_pair)
+                                text_box_message = ""
+
                     if isinstance(pair, InputForm):
                         pair.state_change(pos)
 
