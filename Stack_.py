@@ -112,6 +112,7 @@ class Stack:
         pygame.display.update()
         topped = self.pop(draw, win, settings_buttons, button_and_pair, stack_structure, 0)
         while len(self.elements) != 0 and topped != info:
+            pygame.time.Clock().tick(30)
             alt_stack.elements.append(topped)
             draw(win, settings_buttons, button_and_pair, stack_structure, f"{topped} != info")
             alt_stack.draw(win)
@@ -125,6 +126,7 @@ class Stack:
             message = f"{info} not found, refilling stack"
 
         while len(alt_stack.elements) != 0:
+            pygame.time.Clock().tick(30)
             topped = alt_stack.pop(draw, win, settings_buttons, button_and_pair, stack_structure, 0)
             self.push(topped, draw, win, settings_buttons, button_and_pair, stack_structure, 0)
             draw(win, settings_buttons, button_and_pair, stack_structure, message)
