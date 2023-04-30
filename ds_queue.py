@@ -93,16 +93,31 @@ def queue(win):
                             button.active = False
 
                         elif button.text == "Static" and not button.active:
-                            pass
+                            settings_buttons[1].active = False
+                            button.active = True
+                            queue_structure.switch_to_static()
 
                         elif button.text == "Dynamic" and not button.active:
-                            pass
+                            settings_buttons[0].active = False
+                            button.active = True
+                            queue_structure.switch_to_dynamic()
 
                 for button, pair in button_and_pair.items():
                     if button.is_over(pos):
 
                         if button.text == "ENQUEUE":
-                            pass
+                            if pair.text == "":
+                                pair.error_rect = True
+                                text_box_message = "Input integer value between 0 and 999"
+                            elif not pair.text.isdigit():
+                                pair.error_rect = True
+                                text_box_message = "Letters and characters other than digits not allowed"
+                            else:
+                                queue_structure.enqueue(pair.text, draw, win, settings_buttons, button_and_pair,
+                                                        queue_structure)
+                                pair.text = ""
+                                clear_effects(button_and_pair)
+                                text_box_message = ""
 
                         elif button.text == "DEQUEUE":
                             pass

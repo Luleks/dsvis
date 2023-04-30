@@ -19,11 +19,19 @@ class Queue:
 
     def switch_to_dynamic(self):
         self.dynamic = True
+        self.back = len(self.elements) - 1
+        if self.front != 0:
+            self.front = 1
 
     def switch_to_static(self):
-        if len(self.elements) > self.capacity:
-            self.elements = self.elements[0:self.capacity]
+        if len(self.elements) >= self.capacity:
+            self.elements = self.elements[0:self.capacity-1]
+            self.back = self.capacity - 1
+        else:
+            self.back += 1
         self.dynamic = False
+        if self.front != 0:
+            self.front = 1
 
     def draw_back(self, win):
         back_y = (self.y + self.height + self.free_space // 2) - (self.back + 1) * self.free_space
@@ -50,10 +58,54 @@ class Queue:
         win.blit(back_text, (front_x + (front_width - 10 - back_text.get_width()) // 2, front_y - back_text.get_height()))
 
     def draw(self, win):
+        if not self.dynamic:
+            for i, element in enumerate(self.elements):
+                i = i + self.front - 1
+                pygame.draw.rect(win, (128, 128, 128), (self.x, self.y + self.height - (i + 1) * self.free_space,
+                                                        self.width, self.free_space))
+                pygame.draw.line(win, self.line_color, (self.x, self.y + self.height - (i + 1) * self.free_space),
+                                 (self.x + self.width, self.y + self.height - (i + 1) * self.free_space), 5)
+                value_text = self.font.render(element, True, self.line_color)
+                win.blit(value_text, (self.x + (self.width - value_text.get_width()) // 2,
+                                      self.y + self.height - (i + 1) * self.free_space + (self.free_space -
+                                                                                          value_text.get_height()) // 2))
+            self.draw_back(win)
+            self.draw_front(win)
+
+        else:
+            limit = len(self.elements) if len(self.elements) <= self.capacity else self.capacity
+            for i in range(limit):
+                pygame.draw.rect(win, (128, 128, 128), (self.x, self.y + self.height - (i + 1) * self.free_space,
+                                                        self.width, self.free_space))
+                pygame.draw.line(win, self.line_color, (self.x, self.y + self.height - (i + 1) * self.free_space),
+                                 (self.x + self.width, self.y + self.height - (i + 1) * self.free_space), 5)
+                value_text = self.font.render(self.elements[i], True, self.line_color)
+                win.blit(value_text, (self.x + (self.width - value_text.get_width()) // 2,
+                                      self.y + self.height - (i + 1) * self.free_space + (self.free_space -
+                                                                                          value_text.get_height()) // 2))
+            self.draw_front(win)
+            if self.back < self.capacity:
+                self.draw_back(win)
+
         pygame.draw.line(win, self.line_color, (self.x, self.y), (self.x, self.y + self.height), 5)
         pygame.draw.line(win, self.line_color, (self.x + self.width, self.y), (self.x + self.width,
                                                                                self.y + self.height), 5)
-        
-        self.draw_back(win)
-        self.draw_front(win)
-        
+
+    def enqueue(self, info, draw, win, settings_buttons, button_and_pair, stack_structure, time=1000):
+        if not self.dynamic and (self.back + 2) % self.capacity == self.front:
+            draw(win, settings_buttons, button_and_pair, stack_structure,
+                 "Reached limit for static implementation of queue")
+            pygame.time.delay(1000)
+            return
+        if not self.front:
+            self.front = 1
+        draw(win, settings_buttons, button_and_pair, stack_structure, f"Enqueueing {info} to queue")
+        pygame.time.delay(time)
+        self.elements.append(info)
+        draw(win, settings_buttons, button_and_pair, stack_structure, f"Enqueueing {info} to queue")
+        pygame.time.delay(time)
+        if self.dynamic:
+            self.back += 1
+        else:
+            self.back = (self.back + 1) % self.capacity
+
