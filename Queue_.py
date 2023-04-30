@@ -60,7 +60,10 @@ class Queue:
     def draw(self, win):
         if not self.dynamic:
             for i, element in enumerate(self.elements):
-                i = i + self.front - 1
+                if i + self.front - 1 < self.capacity:
+                    i = i + self.front - 1
+                else:
+                    i = i + self.front - 1 - self.capacity
                 pygame.draw.rect(win, (128, 128, 128), (self.x, self.y + self.height - (i + 1) * self.free_space,
                                                         self.width, self.free_space))
                 pygame.draw.line(win, self.line_color, (self.x, self.y + self.height - (i + 1) * self.free_space),
@@ -109,3 +112,33 @@ class Queue:
         else:
             self.back = (self.back + 1) % self.capacity
 
+    def dequeue(self, draw, win, settings_buttons, button_and_pair, stack_structure, time=1000):
+        if len(self.elements) == 0:
+            draw(win, settings_buttons, button_and_pair, stack_structure, "Error dequeueing from empty queue")
+            pygame.time.delay(1000)
+            return
+        draw(win, settings_buttons, button_and_pair, stack_structure, "Dequeueing from queue")
+        pygame.time.delay(time)
+
+        if not self.dynamic:
+            self.front = (self.front + 1) % (self.capacity + 1)
+            if self.front == 0 and len(self.elements) != 0:
+                self.front = 1
+        else:
+            self.back -= 1
+        to_return = self.elements.pop(0)
+        if len(self.elements) == 0 and self.dynamic:
+            self.front = 0
+        elif len(self.elements) == 0 and not self.dynamic:
+            self.front = self.back = 0
+        draw(win, settings_buttons, button_and_pair, stack_structure, "Dequeueing from queue")
+        pygame.time.delay(time)
+
+        return to_return
+
+    def front_(self, draw, win, settings_buttons, button_and_pair, stack_structure, time=1000):
+        if len(self.elements) == 0:
+            draw(win, settings_buttons, button_and_pair, stack_structure, "Error empty queue")
+            pygame.time.delay(1000)
+            return
+        return self.elements[0]

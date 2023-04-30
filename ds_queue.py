@@ -120,10 +120,18 @@ def queue(win):
                                 text_box_message = ""
 
                         elif button.text == "DEQUEUE":
-                            pass
+                            ret_value = queue_structure.dequeue(draw, win, settings_buttons, button_and_pair,
+                                                                queue_structure)
+                            if ret_value is not None:
+                                pair.text = "returned value"
+                                pair.text = pair.text + f": {ret_value}"
 
                         elif button.text == "FRONT":
-                            pass
+                            ret_value = queue_structure.front_(draw, win, settings_buttons, button_and_pair,
+                                                               queue_structure)
+                            if ret_value is not None:
+                                pair.text = "returned value"
+                                pair.text = pair.text + f": {ret_value}"
 
                         elif button.text == "DEQUEUE VALUE":
                             pass
