@@ -11,10 +11,10 @@ WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("DataStructures visualiser")
 
 game_run = True
-main_menu_run = False
+main_menu_run = True
 linked_list_run = False
 stack_run = False
-queue_run = True
+queue_run = False
 while game_run:
     if main_menu_run:
         running = main_menu(WINDOW, WIDTH, HEIGHT)

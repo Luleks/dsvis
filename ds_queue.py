@@ -49,18 +49,15 @@ def queue(win):
     help_button = Button(30, 380, 240, 60, GREY, "help", BLACK)
     settings_buttons = [static_button, dynamic_button, help_button]
 
-    enqueue = Button(930, 100, 240, 60, GREY, "ENQUEUE", BLACK)
-    dequeue = Button(930, 250, 240, 60, GREY, "DEQUEUE", BLACK)
-    dequeue_value = Button(930, 400, 240, 60, GREY, "DEQUEUE value", BLACK)
-    front = Button(930, 550, 240, 60, GREY, "FRONT", BLACK)
+    enqueue = Button(930, 175, 240, 60, GREY, "ENQUEUE", BLACK)
+    dequeue = Button(930, 325, 240, 60, GREY, "DEQUEUE", BLACK)
+    front = Button(930, 475, 240, 60, GREY, "FRONT", BLACK)
 
-    enqueue_value_ev = InputForm(930, 160, 240, 60, GREY, BLACK, 3, False, "Enter int value")
-    dequeue_ret = Button(930, 310, 240, 60, GREY, "returned value", BLACK)
-    dequeue_value_ev = InputForm(930, 460, 240, 60, GREY, BLACK, 3, False, "Enter int value")
-    front_ret = Button(930, 610, 240, 60, GREY, "returned value", BLACK)
+    enqueue_value_ev = InputForm(930, 235, 240, 60, GREY, BLACK, 3, False, "Enter int value")
+    dequeue_ret = Button(930, 385, 240, 60, GREY, "returned value", BLACK)
+    front_ret = Button(930, 535, 240, 60, GREY, "returned value", BLACK)
 
-    button_and_pair = {enqueue: enqueue_value_ev, dequeue: dequeue_ret, dequeue_value: dequeue_value_ev,
-                       front: front_ret}
+    button_and_pair = {enqueue: enqueue_value_ev, dequeue: dequeue_ret, front: front_ret}
 
     text_box_message = ""
     queue_structure = Queue(430, 220, 400, 420)
@@ -132,9 +129,6 @@ def queue(win):
                             if ret_value is not None:
                                 pair.text = "returned value"
                                 pair.text = pair.text + f": {ret_value}"
-
-                        elif button.text == "DEQUEUE VALUE":
-                            pass
 
                     if isinstance(pair, InputForm):
                         pair.state_change(pos)
